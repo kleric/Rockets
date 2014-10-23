@@ -42,4 +42,9 @@ public class Platform implements Entity {
 		paint.setARGB(255, 0, 127, 0);
 		canvas.drawRect(camera.getRelativeX(x), camera.getRelativeY(y), camera.getRelativeX(x) + getWidth(), camera.getRelativeY(y) + 30, paint);
 	}
+
+	@Override
+	public float getX() {
+		return x;
+	}
 }

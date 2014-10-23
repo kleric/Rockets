@@ -17,7 +17,7 @@ public class Player implements Entity {
 	
 	public Player() {
 		x = 500;
-		y = 200;
+		y = 0;
 		
 		yvel = 0;
 		xvel = 0;
@@ -37,12 +37,6 @@ public class Player implements Entity {
 		
 		if(yvel > World.PLAYER_TERMINAL_VELOCITY) {
 			yvel = World.PLAYER_TERMINAL_VELOCITY;
-		}
-		
-		if(y > 320) {
-			y = 320;
-			yvel = 0;
-			grounded = true;
 		}
 		
 	}
@@ -74,6 +68,7 @@ public class Player implements Entity {
 	public void landOn(Platform platform) {
 		if(yvel >= 0) {
 			yvel = 0; 
+			xvel = 0;
 			y = platform.getY() - getHeight();
 			grounded = true;
 		}
@@ -97,15 +92,26 @@ public class Player implements Entity {
 	public boolean isGrounded() {
 		return grounded;
 	}
-	
+	public void wrap(float screenWidth) {
+		if(x > screenWidth - (getWidth()/2)) {
+			x = -getWidth()/2;
+		}
+		if(x < -getWidth()/2) {
+			x = screenWidth - (getWidth()/2);
+		}
+	}
+	public void push(float xvel, float yvel) {
+		this.xvel += xvel;
+		this.yvel += yvel;
+	}
 	/** Makes the player shoot */
 	public void shoot(World world, float x, float y) {
 		float deltax = this.x - x;
 		float deltay = y - this.y;
 		
 		float angle = (float) Math.atan(deltax/deltay);
-		float xvel = (float) (Math.sin(angle) * Rocket.ROCKET_SPEED);
-		float yvel = (float) (Math.cos(angle) * Rocket.ROCKET_SPEED);
+		float xvel = (float) (Math.sin(angle) * Rocket.ROCKET_SPEED) + this.xvel;
+		float yvel = (float) (Math.cos(angle) * Rocket.ROCKET_SPEED) + this.yvel;
 		
 		if(deltay < 0) {
 			yvel *= -1;
@@ -113,7 +119,8 @@ public class Player implements Entity {
 		else {
 			xvel *= -1;
 		}
-		
+		this.xvel -= xvel * 0.005f;
+		this.yvel -= yvel * 0.005f;
 		
 		world.createRocket(new Rocket(this.x, this.y, xvel, yvel));
 	}

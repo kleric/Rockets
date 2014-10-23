@@ -14,6 +14,18 @@ public class Camera {
 		width = 0;
 		height = 0;
 	}
+	public boolean inBounds(Entity e) {
+		float rely = getRelativeY(e.getY());
+		
+		if(rely < 0 || rely > height) {
+			return false;
+		}
+		return true;
+	}
+	public void reset() {
+		x = 0;
+		y = 0;
+	}
 	public Camera(int w, int h) {
 		x = 0;
 		y = 0;
