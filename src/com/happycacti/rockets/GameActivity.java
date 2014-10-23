@@ -36,7 +36,6 @@ public class GameActivity extends Activity implements SurfaceHolder.Callback {
 		//let's get things started
 		canvasView = new SurfaceView(this);
 		game = new Game();
-		gameThread = new Thread(game);
 
 		//set the view properly
 		setContentView(canvasView);
@@ -48,26 +47,48 @@ public class GameActivity extends Activity implements SurfaceHolder.Callback {
 		super.onStart();
 		
 		//start the game thread
+		gameThread = new Thread(game);
 		gameThread.start();
 	}
+	
+	public void onStop() {
+		super.onStop();
+		
+		game.stop();
+	}
 	class Game implements Runnable {
-		boolean running = true;
+		boolean running;
 		long lastTime;
 		
+		private World world;
+		
+		private int canvasWidth;
+		private int canvasHeight;
+		
+		public Game() {
+			init();
+		}
+		public void init() {
+			world = new World();
+		}
 		@Override
 		public void run() {
 			//game loop
 			lastTime = System.currentTimeMillis();
+			running = true;
 			while(running) {
 				long currentTime = System.currentTimeMillis();
 				int delta = (int)(currentTime - lastTime);
 				
 				if(delta > UPDATE_DELAY) {
+					lastTime = currentTime;
 					tryDraw();
 					update(delta);
 				}
-				//TODO game loop.
 			}
+		}
+		public void stop() {
+			running = false;
 		}
 		/**
 		 * Attempted to get a lock on the SurfaceHolder
@@ -93,11 +114,18 @@ public class GameActivity extends Activity implements SurfaceHolder.Callback {
 		 * The canvas that you will draw on. Must not be null.
 		 */
 		private void draw(Canvas canvas) {
-			
+			world.draw(canvas);
 		}
 		
 		private void update(int delta) {
+			world.update(delta);
+		}
+		
+		public void updateCanvasSize(int width, int height) {
+			canvasHeight = height;
+			canvasWidth = width;
 			
+			world.updateViewSize(canvasWidth, canvasHeight);
 		}
 	}
 
@@ -110,6 +138,7 @@ public class GameActivity extends Activity implements SurfaceHolder.Callback {
 	public void surfaceChanged(SurfaceHolder holder, int format, int width,
 			int height) {
 		canvasViewHolder = holder;
+		game.updateCanvasSize(width, height);
 	}
 
 	@Override
