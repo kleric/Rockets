@@ -1,7 +1,7 @@
 package com.happycacti.rockets;
 
 public class Camera {
-	private static float SPACE_ABOVE = 0.4f;
+	private static float SPACE_ABOVE = 0.3f;
 	private float x;
 	private float y; 
 	
@@ -26,6 +26,12 @@ public class Camera {
 	}
 	public float getRelativeY(float y) {
 		return y - this.y;
+	}
+	public float getRealX(float x) {
+		return x + this.x;
+	}
+	public float getRealY(float y) {
+		return y + this.y;
 	}
 	public void updateSize(int w, int h) {
 		width = w;

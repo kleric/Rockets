@@ -3,10 +3,13 @@ package com.happycacti.rockets;
 import android.app.Activity;
 import android.graphics.Canvas;
 import android.os.Bundle;
+import android.support.v4.widget.SimpleCursorAdapter.ViewBinder;
+import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
+import android.view.View;
 
-public class GameActivity extends Activity implements SurfaceHolder.Callback {
+public class GameActivity extends Activity implements SurfaceHolder.Callback, View.OnTouchListener {
 	
 	/**
 	 * Limits how often we update
@@ -32,15 +35,17 @@ public class GameActivity extends Activity implements SurfaceHolder.Callback {
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		
+
 		//let's get things started
 		canvasView = new SurfaceView(this);
 		game = new Game();
 
 		//set the view properly
 		setContentView(canvasView);
+		canvasView.setOnTouchListener(this);
 		
 		canvasView.getHolder().addCallback(this);
+		
 	}
 	@Override
 	public void onStart() {
@@ -142,4 +147,14 @@ public class GameActivity extends Activity implements SurfaceHolder.Callback {
 
 	@Override
 	public void surfaceDestroyed(SurfaceHolder holder) {}
+	
+	@Override
+	public boolean onTouch(View v, MotionEvent event) {
+		switch(event.getAction()) {
+		case MotionEvent.ACTION_DOWN:
+			game.world.press(event.getX(), event.getY());
+			break;
+		}
+		return false;
+	}
 }
