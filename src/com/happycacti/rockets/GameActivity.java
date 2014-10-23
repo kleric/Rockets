@@ -53,7 +53,6 @@ public class GameActivity extends Activity implements SurfaceHolder.Callback {
 	
 	public void onStop() {
 		super.onStop();
-		
 		game.stop();
 	}
 	class Game implements Runnable {

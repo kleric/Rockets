@@ -21,6 +21,7 @@ public class World {
 	}
 	/** render the world onto the canvas */
 	public void draw(Canvas canvas) {
+		canvas.drawRGB(127, 127, 127);
 		player.draw(canvas, camera);
 	}
 	
