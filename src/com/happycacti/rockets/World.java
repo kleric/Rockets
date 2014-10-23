@@ -3,6 +3,7 @@ package com.happycacti.rockets;
 import java.util.ArrayList;
 
 import android.graphics.Canvas;
+import android.graphics.Rect;
 
 public class World {
 	public static final float GRAVITY_ACCELERATION = 0.001f;
@@ -24,6 +25,8 @@ public class World {
 		camera = new Camera();
 		platforms = new ArrayList<Platform>();
 		rockets = new ArrayList<Rocket>();
+
+		platforms.add(new Platform(430, 100));
 	}
 	/** The size of the screen has changed! Update accordingly */
 	public void updateViewSize(int w, int h) {
@@ -42,6 +45,9 @@ public class World {
 				r.draw(canvas, camera);
 			}
 		}
+		for(Platform p : platforms) {
+			p.draw(canvas, camera);
+		}
 	}
 
 	public void update(int delta) {
@@ -49,11 +55,29 @@ public class World {
 		player.update(delta);
 
 		synchronized(rockets) {
-			for(Rocket r : rockets) {
+			for(int i = rockets.size() - 1; i >= 0; i--) {
+				Rocket r = rockets.get(i);
 				r.update(delta);
+		
+				Rect rekt = new Rect((int)r.getX(), (int)r.getY(), (int)(r.getX() + r.getWidth()), (int)(r.getY() + r.getHeight()));
+		
+				for(Platform p : platforms) {
+					if(p.collides(rekt)) {
+						rockets.remove(i);
+						//TODO EXPLOSION
+					}
+				}
 			}
 		}
 
+		float x = player.getX();
+		float y = player.getY() + player.getHeight();
+		Rect playerRect = new Rect((int)x, (int)(y - 1), (int)(x + player.getWidth()), (int)y);
+		for(Platform p : platforms) {
+			if(p.collides(playerRect)) {
+				player.landOn(p);
+			}
+		}
 		//Point the camera at the player (sorta)
 		camera.update(player);
 	}

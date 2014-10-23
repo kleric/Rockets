@@ -32,9 +32,19 @@ public class Rocket implements Entity {
 	}
 	@Override
 	public void draw(Canvas canvas, Camera camera) {
-		canvas.drawRect(x, camera.getRelativeY(y), x + 16, camera.getRelativeY(y) + 16, paint);
+		canvas.drawRect(x, camera.getRelativeY(y), x + getWidth(), camera.getRelativeY(y) + getHeight(), paint);
 		
 	}
-	
-	
+	public float getX() {
+		return x;
+	}
+	public float getY() {
+		return y;
+	}
+	public float getWidth() {
+		return 16;
+	}
+	public float getHeight() {
+		return 16;
+	}
 }

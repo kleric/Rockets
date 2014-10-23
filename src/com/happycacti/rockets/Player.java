@@ -17,7 +17,7 @@ public class Player implements Entity {
 	
 	public Player() {
 		x = 500;
-		y = 0;
+		y = 200;
 		
 		yvel = 0;
 		xvel = 0;
@@ -48,8 +48,8 @@ public class Player implements Entity {
 		float x = this.x;
 		float y = camera.getRelativeY(this.y);
 	
-		int width = 40;
-		int height = 100;
+		int width = (int) getWidth();
+		int height = (int) getHeight();
 		
 		canvas.drawRect(x, y, x + width, y + height, paint);
 	}
@@ -64,6 +64,19 @@ public class Player implements Entity {
 			grounded = false;
 			yvel = JUMP_VELOCITY;
 		}
+	}
+	public void landOn(Platform platform) {
+		if(yvel >= 0) {
+			yvel = 0; 
+			y = platform.getY() - getHeight();
+			grounded = true;
+		}
+	}
+	public float getHeight() {
+		return 100;
+	}
+	public float getWidth() {
+		return 40;
 	}
 	public void press(World world, float x, float y) {
 		if(grounded) {
