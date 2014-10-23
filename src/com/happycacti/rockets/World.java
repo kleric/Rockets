@@ -18,7 +18,7 @@ public class World {
 	private ArrayList<Rocket> rockets;
 
 	public void press(float x, float y) {
-		player.press(this, camera.getRealX(x), camera.getRealY(y));
+		player.act(this, camera.getRealX(x), camera.getRealY(y));
 	}
 	public World() {
 		player = new Player();

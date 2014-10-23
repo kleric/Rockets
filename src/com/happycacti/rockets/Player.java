@@ -26,6 +26,9 @@ public class Player implements Entity {
 		
 		paint.setARGB(255, 255, 0, 0);
 	}
+	/**
+	 * Update the player given a delta of time
+	 */
 	public void update(int delta) {
 		y += delta * yvel;
 		x += delta * xvel;
@@ -44,6 +47,7 @@ public class Player implements Entity {
 		
 	}
 	@Override
+	/** Render the player given a camera and canvas */
 	public void draw(Canvas canvas, Camera camera) {
 		float x = this.x;
 		float y = camera.getRelativeY(this.y);
@@ -59,12 +63,14 @@ public class Player implements Entity {
 	public float getY() {
 		return y;
 	}
+	/** Makes the player jump (if he can) */
 	public void jump() {
 		if(grounded) {
 			grounded = false;
 			yvel = JUMP_VELOCITY;
 		}
 	}
+	/** The player just hit a platform */
 	public void landOn(Platform platform) {
 		if(yvel >= 0) {
 			yvel = 0; 
@@ -78,7 +84,8 @@ public class Player implements Entity {
 	public float getWidth() {
 		return 40;
 	}
-	public void press(World world, float x, float y) {
+	/** Makes the player take action (e.g. jump or shoot) */
+	public void act(World world, float x, float y) {
 		if(grounded) {
 			jump();
 		}
@@ -86,9 +93,12 @@ public class Player implements Entity {
 			shoot(world, x, y);
 		}
 	}
+	/** Check if the player is on a platform */
 	public boolean isGrounded() {
 		return grounded;
 	}
+	
+	/** Makes the player shoot */
 	public void shoot(World world, float x, float y) {
 		float deltax = this.x - x;
 		float deltay = y - this.y;

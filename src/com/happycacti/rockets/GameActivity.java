@@ -3,7 +3,6 @@ package com.happycacti.rockets;
 import android.app.Activity;
 import android.graphics.Canvas;
 import android.os.Bundle;
-import android.support.v4.widget.SimpleCursorAdapter.ViewBinder;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
@@ -55,27 +54,40 @@ public class GameActivity extends Activity implements SurfaceHolder.Callback, Vi
 		gameThread = new Thread(game);
 		gameThread.start();
 	}
-	
+	@Override
 	public void onStop() {
 		super.onStop();
 		game.stop();
 	}
+	/**
+	 * Game class is literally the game
+	 * deal with it.
+	 * @author clark
+	 *
+	 */
 	class Game implements Runnable {
 		boolean running;
 		long lastTime;
 		
+		/** World that holds all of our entities */
 		private World world;
 		
+		/** Width of the SurfaceView */
 		private int canvasWidth;
+		
+		/** Height of the SurfaceView */
 		private int canvasHeight;
 		
 		public Game() {
 			init();
 		}
+		/** Initialize a new game! */
 		public void init() {
 			world = new World();
 		}
+		
 		@Override
+		/** Handles the running the game (this should be handled by threads, not called) */
 		public void run() {
 			//game loop
 			lastTime = System.currentTimeMillis();
@@ -91,6 +103,7 @@ public class GameActivity extends Activity implements SurfaceHolder.Callback, Vi
 				}
 			}
 		}
+		/** Stops execution of the game. */
 		public void stop() {
 			running = false;
 		}
@@ -121,10 +134,12 @@ public class GameActivity extends Activity implements SurfaceHolder.Callback, Vi
 			world.draw(canvas);
 		}
 		
+		/** Update the state of the game (e.g. processing frame) */
 		private void update(int delta) {
 			world.update(delta);
 		}
 		
+		/** Update what the size of the canvas is */
 		public void updateCanvasSize(int width, int height) {
 			canvasHeight = height;
 			canvasWidth = width;
@@ -153,7 +168,7 @@ public class GameActivity extends Activity implements SurfaceHolder.Callback, Vi
 		switch(event.getAction()) {
 		case MotionEvent.ACTION_DOWN:
 			game.world.press(event.getX(), event.getY());
-			break;
+			return true;
 		}
 		return false;
 	}
