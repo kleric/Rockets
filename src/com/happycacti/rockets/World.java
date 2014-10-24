@@ -78,7 +78,7 @@ public class World {
 
 	public void update(int delta) {
 		// Update entities based on time change
-		float oldPlayerX = player.getX();
+	
 		float oldPlayerY = player.getY();
 		
 		player.update(delta);
@@ -128,11 +128,11 @@ public class World {
 
 		float x = player.getX();
 		float y = player.getY() + player.getHeight();
-		Rect oldPlayerRect = new Rect((int) oldPlayerX, (int) oldPlayerY, (int) (oldPlayerX + player.getWidth()), (int)(oldPlayerY + player.getHeight()));
-		Rect playerRect = new Rect((int) x, (int) (y - 1),
-				(int) (x + player.getWidth()), (int) y);
+
+		Rect playerRect = new Rect((int) x, (int) (y),
+				(int) (x + player.getWidth()), (int) y + 1);
 		for (Platform p : platforms) {
-			if (!p.collides(oldPlayerRect) && p.collides(playerRect)) {
+			if ((oldPlayerY + player.getHeight()) <= p.getY() && p.collides(playerRect)) {
 				player.landOn(p);
 			}
 		}
