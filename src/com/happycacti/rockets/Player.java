@@ -12,12 +12,20 @@ public class Player implements Entity {
 	private float yvel;
 	
 	private boolean grounded;
+	private boolean alive;
 	
 	Paint paint = new Paint();
-	
+	public void setYVel(float yvel) {
+		this.yvel = yvel;
+	}
+	public void setXVel(float xvel) {
+		this.xvel = xvel;
+	}
 	public Player() {
 		x = 500;
-		y = 0;
+		y = 900;
+		
+		alive = true;
 		
 		yvel = 0;
 		xvel = 0;
@@ -25,6 +33,9 @@ public class Player implements Entity {
 		grounded = false;
 		
 		paint.setARGB(255, 255, 0, 0);
+	}
+	public boolean isAlive() {
+		return alive;
 	}
 	/**
 	 * Update the player given a delta of time
@@ -66,12 +77,21 @@ public class Player implements Entity {
 	}
 	/** The player just hit a platform */
 	public void landOn(Platform platform) {
+		if(platform == null) {
+			yvel = 0;
+			xvel = 0;
+			grounded = true;
+			return;
+		}
 		if(yvel >= 0) {
 			yvel = 0; 
 			xvel = 0;
 			y = platform.getY() - getHeight();
 			grounded = true;
 		}
+	}
+	public void kill() {
+		alive = false;
 	}
 	public float getHeight() {
 		return 100;
@@ -106,8 +126,8 @@ public class Player implements Entity {
 	}
 	/** Makes the player shoot */
 	public void shoot(World world, float x, float y) {
-		float deltax = this.x - x;
-		float deltay = y - this.y;
+		float deltax = (this.x + this.getWidth()/2) - x;
+		float deltay = y - (this.y + this.getHeight()/2);
 		
 		float angle = (float) Math.atan(deltax/deltay);
 		float xvel = (float) (Math.sin(angle) * Rocket.ROCKET_SPEED) + this.xvel;
@@ -122,6 +142,12 @@ public class Player implements Entity {
 		this.xvel -= xvel * 0.005f;
 		this.yvel -= yvel * 0.005f;
 		
-		world.createRocket(new Rocket(this.x, this.y, xvel, yvel));
+		world.createRocket(new Rocket((this.x + this.getWidth()/2), (this.y + this.getHeight()/2), xvel, yvel));
+	}
+	public void setX(float x) {
+		this.x = x;
+	}
+	public void setY(float y) {
+		this.y = y;
 	}
 }

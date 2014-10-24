@@ -16,15 +16,15 @@ public class Camera {
 	}
 	public boolean inBounds(Entity e) {
 		float rely = getRelativeY(e.getY());
-		
-		if(rely < 0 || rely > height) {
+		float relx = getRelativeX(e.getX());
+		if(relx < e.getWidth()/2 || relx > (width - e.getWidth()/2) || rely < 0 || rely > height) {
 			return false;
 		}
 		return true;
 	}
 	public void reset() {
 		x = 0;
-		y = 0;
+		y = -height;
 	}
 	public Camera(int w, int h) {
 		x = 0;

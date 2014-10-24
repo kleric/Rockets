@@ -7,4 +7,6 @@ public interface Entity {
 	public abstract void draw(Canvas canvas, Camera camera);
 	public float getX();
 	public float getY();
+	public float getWidth();
+	public float getHeight();
 }

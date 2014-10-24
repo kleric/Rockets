@@ -79,11 +79,12 @@ public class GameActivity extends Activity implements SurfaceHolder.Callback, Vi
 		private int canvasHeight;
 		
 		public Game() {
-			init();
+			world = new World();
 		}
 		/** Initialize a new game! */
-		public void init() {
-			world = new World();
+		public void setup() {
+			if(!world.isInitialized())
+				world.setup();
 		}
 		
 		@Override
@@ -158,6 +159,7 @@ public class GameActivity extends Activity implements SurfaceHolder.Callback, Vi
 			int height) {
 		canvasViewHolder = holder;
 		game.updateCanvasSize(width, height);
+		game.setup();
 	}
 
 	@Override
