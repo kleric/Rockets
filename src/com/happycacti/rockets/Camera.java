@@ -17,7 +17,7 @@ public class Camera {
 	public boolean inBounds(Entity e) {
 		float rely = getRelativeY(e.getY());
 		float relx = getRelativeX(e.getX());
-		if(relx < e.getWidth()/2 || relx > (width - e.getWidth()/2) || rely < 0 || rely > height) {
+		if(relx < -e.getWidth()/2 || relx > (width - (e.getWidth()/2)) || rely < 0 || rely > height) {
 			return false;
 		}
 		return true;

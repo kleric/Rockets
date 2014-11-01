@@ -11,12 +11,15 @@ public class World {
 
 	private Player player;
 	private Camera camera;
-
+	private LevelGenerator generator;
+	
+	private int score;
+	
 	private int width, height;
 
 	private ArrayList<Platform> platforms;
 	private ArrayList<Rocket> rockets;
-	
+
 	private boolean initialized = false;
 
 	public void press(float x, float y) {
@@ -28,35 +31,28 @@ public class World {
 		camera = new Camera();
 		platforms = new ArrayList<Platform>();
 		rockets = new ArrayList<Rocket>();
+		generator = new LevelGenerator();
 	}
 	public boolean isInitialized() {
 		return initialized;
 	}
 	public void setup() {
-		initialized = true;
-		addStartingPlatform();
-		
+		score = 0;
+		generator.reset();
+		generator.generate_start(platforms, height);
 		player.setX(width/2 - player.getWidth()/2);
 		player.setY(platforms.get(0).getY() - player.getHeight());
-		platforms.add(new Platform(130, -600, 1));
+		/*platforms.add(new Platform(130, -600, 1));
 		platforms.add(new Platform(830, -800, 2));
-		platforms.add(new Platform(830, -1200, 3));
+		platforms.add(new Platform(830, -1200, 3));*/
 		camera.reset();
-	}
-	private void addStartingPlatform() {
-		platforms.clear();
-		Platform ground = new Platform(0, 0, 0);
-		
-		float x, y;
-		x = (width/2) - ground.getWidth()/2;
-		y = -ground.getHeight() - (height * 0.1f);
-		ground.move(x, y);
-		platforms.add(ground);
+		initialized = true;
 	}
 	/** The size of the screen has changed! Update accordingly */
 	public void updateViewSize(int w, int h) {
 		// Update the size the camera thinks the world is
 		camera.updateSize(w, h);
+		generator.updateWidth(w);
 		width = w;
 		height = h;
 	}
@@ -77,10 +73,10 @@ public class World {
 	}
 
 	public void update(int delta) {
+		if(!initialized) return;
 		// Update entities based on time change
-	
-		float oldPlayerY = player.getY();
 		
+		float oldPlayerY = player.getY();
 		player.update(delta);
 		player.wrap(width);
 		synchronized (rockets) {
@@ -96,32 +92,32 @@ public class World {
 						(int) (r.getY() + r.getHeight()));
 
 				for (Platform p : platforms) {
-					if (!r.isExploding() && p.collides(rect)) {
-						float dx = r.getX() - (player.getX() + player.getWidth()/2);
-						float dy = player.getY() + player.getHeight() - r.getY();
+					if(r.isExploding() || !p.collides(rect)) continue;
+					
+					float dx = r.getX() - (player.getX() + player.getWidth()/2);
+					float dy = player.getY() + player.getHeight() - r.getY();
 
-						float dist = (float) Math.sqrt(dx * dx + dy * dy);
-						if(dist < r.getWeakExplosionRadius()) {
-							float expforce = (dist < r.getStrongExplosionRadius()) ? r.getStrongExplosionForce() : r.getWeakExplosionForce();
-							float force = (float) expforce;
+					float dist = (float) Math.sqrt(dx * dx + dy * dy);
+					if(dist < r.getWeakExplosionRadius()) {
+						float expforce = (dist < r.getStrongExplosionRadius()) ? r.getStrongExplosionForce() : r.getWeakExplosionForce();
+						float force = (float) expforce;
 
-							float angle = (float) Math.atan(dx/dy);
-							float xvel = (float) (Math.sin(angle) * force);
-							float yvel = (float) (Math.cos(angle) * force);
+						float angle = (float) Math.atan(dx/dy);
+						float xvel = (float) (Math.sin(angle) * force);
+						float yvel = (float) (Math.cos(angle) * force);
 
-							if(dy < 0) {
-								yvel *= -1;
-							}
-							else {
-								xvel *= -1;
-							}
-							//player.push(xvel, yvel);
-							player.setYVel(yvel);
-							player.setXVel(xvel);
+						if(dy < 0) {
+							yvel *= -1;
 						}
-						rockets.remove(i);
-						// TODO EXPLOSION
+						else {
+							xvel *= -1;
+						}
+						player.setYVel(yvel);
+						player.setXVel(xvel);
 					}
+					rockets.remove(i);
+					break;
+					// TODO EXPLOSION
 				}
 			}
 		}
@@ -137,14 +133,17 @@ public class World {
 			}
 		}
 		if(!camera.inBounds(player)) {
-			//player = new Player();
-			player.kill();
-			//camera.reset();
+			setup();
 		}
 		// Point the camera at the player (sorta)
+		int oldScore = score;
 		camera.update(player);
+		score = (int) (camera.getRealY(0) - height);
+		if(score != oldScore) {
+			generator.update(platforms, score);
+		}
 	}
-	
+
 	public void createRocket(Rocket rocket) {
 		synchronized (rockets) {
 			rockets.add(rocket);
